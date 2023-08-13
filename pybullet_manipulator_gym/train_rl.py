@@ -16,8 +16,8 @@ import gym
 import random
 from ppo import PPO, Memory, ActorCritic
 from gym_env import ur5GymEnv
-
-title = 'PyBullet UR5 robot'
+from er_env import er6GymEnv
+title = 'PyBullet ER6 robot'
 
 def get_args():
     parser = argparse.ArgumentParser(description=title)
@@ -84,7 +84,7 @@ def main():
     if not os.path.exists(args.save_dir):
         os.mkdir(args.save_dir)
     
-    env = ur5GymEnv(renders=args.render, maxSteps=args.mel, 
+    env = er6GymEnv(renders=args.render, maxSteps=args.mel, 
             actionRepeat=args.repeat, task=args.task, randObjPos=args.randObjPos,
             simulatedGripper=args.simgrip, learning_param=args.lp)
     

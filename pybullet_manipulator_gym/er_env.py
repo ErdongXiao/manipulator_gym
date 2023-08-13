@@ -1,7 +1,6 @@
 # E. Culurciello
 # February 2021
 
-# PyBullet UR-5 from https://github.com/josepdaniel/UR5Bullet
 
 import random
 import time
@@ -19,7 +18,7 @@ import pybullet_data
 from collections import namedtuple
 from attrdict import AttrDict
 
-ROBOT_URDF_PATH = "./ur_e_description/urdf/ur5e.urdf"
+ROBOT_URDF_PATH = "./er_description/urdf/er6-730.urdf"
 TABLE_URDF_PATH = os.path.join(pybullet_data.getDataPath(), "table/table.urdf")
 CUBE_URDF_PATH = os.path.join(pybullet_data.getDataPath(), "cube_small.urdf")
 
@@ -35,7 +34,7 @@ def goal_distance2d(goal_a, goal_b):
     return np.linalg.norm(goal_a[0:2] - goal_b[0:2], axis=-1)
 
 
-class ur5GymEnv(gym.Env):
+class er6GymEnv(gym.Env):
     def __init__(self,
                  camera_attached=False,
                  # useIK=True,
@@ -67,15 +66,15 @@ class ur5GymEnv(gym.Env):
         self.end_effector_index = 7
         self.table = pybullet.loadURDF(TABLE_URDF_PATH, [0.5, 0, -0.6300], [0, 0, 0, 1])
         flags = pybullet.URDF_USE_SELF_COLLISION
-        self.ur5 = pybullet.loadURDF(ROBOT_URDF_PATH, [0, 0, 0], [0, 0, 0, 1], flags=flags)
-        self.num_joints = pybullet.getNumJoints(self.ur5)
-        self.control_joints = ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"]
+        self.er6 = pybullet.loadURDF(ROBOT_URDF_PATH, [0, 0, 0], [0, 0, 0, 1], flags=flags,useFixedBase=1)
+        self.num_joints = pybullet.getNumJoints(self.er6)
+        self.control_joints = ["Rev1", "Rev2", "Rev3", "Rev4", "Rev5", "Rev6"]
         self.joint_type_list = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
         self.joint_info = namedtuple("jointInfo", ["id", "name", "type", "lowerLimit", "upperLimit", "maxForce", "maxVelocity", "controllable"])
 
         self.joints = AttrDict()
         for i in range(self.num_joints):
-            info = pybullet.getJointInfo(self.ur5, i)
+            info = pybullet.getJointInfo(self.er6, i)
             jointID = info[0]
             jointName = info[1].decode("utf-8")
             jointType = self.joint_type_list[info[2]]
@@ -84,18 +83,18 @@ class ur5GymEnv(gym.Env):
             jointMaxForce = info[10]
             jointMaxVelocity = info[11]
             controllable = True if jointName in self.control_joints else False
-            info = self.joint_info(jointID, jointName, jointType, jointLowerLimit, jointUpperLimit, jointMaxForce, jointMaxVelocity, controllable)
+            info = self.joint_info(jointID, jointName, jointType, jointLowerLimit, jointUpperLimit, jointMaxForce*10, jointMaxVelocity, controllable)
             if info.type == "REVOLUTE":
-                pybullet.setJointMotorControl2(self.ur5, info.id, pybullet.VELOCITY_CONTROL, targetVelocity=0, force=0)
+                pybullet.setJointMotorControl2(self.er6, info.id, pybullet.VELOCITY_CONTROL, targetVelocity=0, force=0)
             self.joints[info.name] = info
 
         # object:
-        self.initial_obj_pos = [0.8, 0.1, 0.0] # initial object pos
+        self.initial_obj_pos = [0.65, 0.1, 0.0] # initial object pos
         self.obj = pybullet.loadURDF(CUBE_URDF_PATH, self.initial_obj_pos)
 
-        self.name = 'ur5GymEnv'
+        self.name = 'er6GymEnv'
         self.simulatedGripper = simulatedGripper
-        self.action_dim = 4
+        self.action_dim = 7
         self.stepCounter = 0
         self.maxSteps = maxSteps
         self.terminated = False
@@ -124,7 +123,7 @@ class ur5GymEnv(gym.Env):
             forces.append(joint.maxForce)
 
         pybullet.setJointMotorControlArray(
-            self.ur5, indexes,
+            self.er6, indexes,
             pybullet.POSITION_CONTROL,
             targetPositions=joint_angles,
             targetVelocities=[0]*len(poses),
@@ -133,7 +132,7 @@ class ur5GymEnv(gym.Env):
         )
 
     def get_joint_angles(self):
-        j = pybullet.getJointStates(self.ur5, [1,2,3,4,5,6])
+        j = pybullet.getJointStates(self.er6, [1,2,3,4,5,6])
         joints = [i[0] for i in j]
         return joints
     
@@ -154,10 +153,10 @@ class ur5GymEnv(gym.Env):
         upper_limits = [math.pi]*6
         joint_ranges = [2*math.pi]*6
         # rest_poses = [0, -math.pi/2, -math.pi/2, -math.pi/2, -math.pi/2, 0]
-        rest_poses = [(-0.34, -1.57, 1.80, -1.57, -1.57, 0.00)] # rest pose of our ur5 robot
+        rest_poses = [(-0.34, -1.57, 1.80, -1.57, -1.57, 0.00)] # rest pose of our er6 robot
 
         joint_angles = pybullet.calculateInverseKinematics(
-            self.ur5, self.end_effector_index, position, quaternion, 
+            self.er6, self.end_effector_index, position, quaternion, 
             jointDamping=[0.01]*6, upperLimits=upper_limits, 
             lowerLimits=lower_limits, jointRanges=joint_ranges, 
             restPoses=rest_poses
@@ -166,7 +165,7 @@ class ur5GymEnv(gym.Env):
        
         
     def get_current_pose(self):
-        linkstate = pybullet.getLinkState(self.ur5, self.end_effector_index, computeForwardKinematics=True)
+        linkstate = pybullet.getLinkState(self.er6, self.end_effector_index, computeForwardKinematics=True)
         position, orientation = linkstate[0], linkstate[1]
         return (position, orientation)
 
@@ -174,7 +173,7 @@ class ur5GymEnv(gym.Env):
     def reset(self):
         self.stepCounter = 0
         self.terminated = False
-        self.ur5_or = [0.0, 1/2*math.pi, 0.0]
+        self.er6_or = [3.14, 0.0, 0.0]
 
         # pybullet.addUserDebugText('X', self.obj_pos, [0,1,0], 1) # display goal
         # if self.randObjPos:
@@ -182,7 +181,8 @@ class ur5GymEnv(gym.Env):
         pybullet.resetBasePositionAndOrientation(self.obj, self.initial_obj_pos, [0.,0.,0.,1.0]) # reset object pos
 
         # reset robot simulation and position:
-        joint_angles = (-0.34, -1.57, 1.80, -1.57, -1.57, 0.00) # pi/2 = 1.5707
+        # joint_angles = (-0.34, -1.57, 1.80, -1.57, -1.57, 0.00) # pi/2 = 1.5707
+        joint_angles = (0, 0, 0, 0, 0, 0)
         self.set_joint_angles(joint_angles)
 
         # step simualator:
@@ -200,11 +200,14 @@ class ur5GymEnv(gym.Env):
         gripper_action = action[self.action_dim-1].astype(float) # gripper - range: [-1=closed,1=open]
 
         # get current position:
-        cur_p = self.get_current_pose()
+        # cur_p = self.get_current_pose()
+        cur_j = self.get_joint_angles()
         # add delta position:
-        new_p = np.array(cur_p[0]) + arm_action
+        # new_p = np.array(cur_p[0]) + arm_action
+        new_j = np.array(cur_j) + arm_action
         # actuate: 
-        joint_angles = self.calculate_ik(new_p, self.ur5_or) # XYZ and angles set to zero
+        # joint_angles = self.calculate_ik(new_p, self.er6_or) # XYZ and angles set to zero
+        joint_angles = new_j
         self.set_joint_angles(joint_angles)
         
         # step simualator:

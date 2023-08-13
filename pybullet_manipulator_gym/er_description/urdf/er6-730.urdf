@@ -5,7 +5,7 @@
   <joint name="base_fixed" type="fixed">
     <parent link="base"/>
     <child link="base_link"/>
-    <origin rpy="0 0 3.14" xyz="0.0 0.0 0.0"/>
+    <origin rpy="0 0 0.0" xyz="0.0 0.0 0.0"/>
   </joint>
   <link name="base_link">
     <visual>
@@ -20,6 +20,11 @@
         <mesh filename="meshes/base_link.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="4.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.00443333156" ixy="0.0" ixz="0.0" iyy="0.00443333156" iyz="0.0" izz="0.0072"/>
+    </inertial>
   </link>
   <joint name="Rev1" type="revolute">
     <parent link="base_link"/>
@@ -41,6 +46,11 @@
         <mesh filename="meshes/ER6-730-2_1.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="3.7"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="0.010267495893" ixy="0.0" ixz="0.0" iyy="0.010267495893" iyz="0.0" izz="0.00666"/>
+    </inertial>
   </link>
   <joint name="Rev2" type="revolute">
     <parent link="second_link"/>
@@ -62,6 +72,11 @@
         <mesh filename="meshes/ER6-730-3_1.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="8.393"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.2125"/>
+      <inertia ixx="0.133885781862" ixy="0.0" ixz="0.0" iyy="0.133885781862" iyz="0.0" izz="0.0151074"/>
+    </inertial>
   </link>
   <joint name="Rev3" type="revolute">
     <parent link="third_link"/>
@@ -83,6 +98,11 @@
         <mesh filename="meshes/ER6-730-4_1.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="2.275"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.196"/>
+      <inertia ixx="0.0311796208615" ixy="0.0" ixz="0.0" iyy="0.0311796208615" iyz="0.0" izz="0.004095"/>
+    </inertial>
   </link>
   <joint name="Rev4" type="revolute">
     <parent link="fourth_link"/>
@@ -104,6 +124,11 @@
         <mesh filename="meshes/ER6-730-5_1.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="1.219"/>
+      <origin rpy="0 0 0" xyz="0.0 0.127 0.0"/>
+      <inertia ixx="0.00255989897604" ixy="0.0" ixz="0.0" iyy="0.00255989897604" iyz="0.0" izz="0.0021942"/>
+    </inertial>
   </link>
   <joint name="Rev5" type="revolute">
     <parent link="fifth_link"/>
@@ -125,6 +150,11 @@
         <mesh filename="meshes/ER6-730-05-1_1.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="1.219"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.1"/>
+      <inertia ixx="0.00255989897604" ixy="0.0" ixz="0.0" iyy="0.00255989897604" iyz="0.0" izz="0.0021942"/>
+    </inertial>
   </link>
   <joint name="Rev6" type="revolute">
     <parent link="sixth_link"/>
@@ -146,6 +176,11 @@
         <mesh filename="meshes/ER6-730-06_1.stl" />
       </geometry>
     </collision>
+    <inertial>
+      <mass value="0.1879"/>
+      <origin rpy="1.57079632679 0 0" xyz="0.0 0.0771 0.0"/>
+      <inertia ixx="9.89041005217e-05" ixy="0.0" ixz="0.0" iyy="9.89041005217e-05" iyz="0.0" izz="0.0001321171875"/>
+    </inertial>
   </link>
   <joint name="ee_fixed_joint" type="fixed">
     <parent link="seventh_link"/>
@@ -153,5 +188,11 @@
     <origin rpy="3.14159265359 0.0 0.0" xyz="0.00092 0.0 -0.08682"/>
   </joint>
   <link name="ee_link">
+    <collision>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="-0.01 0 0"/>
+    </collision>
   </link>
 </robot>

@@ -125,7 +125,7 @@ class PPO:
             rewards.insert(0, discounted_reward)
         
         # Normalizing the rewards:
-        rewards = torch.tensor(rewards).to(self.device)
+        rewards = torch.tensor(np.array(rewards)).to(self.device)
         rewards = (rewards - rewards.mean()) / (rewards.std() + 1e-5)
         rewards = rewards.float().squeeze()
         

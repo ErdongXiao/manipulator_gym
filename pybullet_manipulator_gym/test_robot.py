@@ -1,7 +1,7 @@
 # E. Culurciello
 # February 2021
 
-# PyBullet UR-5 from https://github.com/josepdaniel/UR5Bullety
+# PyBullet UR-5 from https://github.com/josepdaniel/ER6Bullety
 
 import numpy as np
 from itertools import count
@@ -11,9 +11,9 @@ from random import randint
 import torch
 from argparse import ArgumentParser
 import gym
-from gym_env import ur5GymEnv
+from er_env import er6GymEnv
 
-title = 'PyBullet UR5 robot'
+title = 'PyBullet ER6 robot'
 
 def get_args():
     parser = ArgumentParser(description=title)
@@ -45,7 +45,7 @@ torch.set_printoptions(profile="full", precision=2)
 # create the environment
 print(title)
 args.env_name = title
-env = ur5GymEnv(renders=args.render, maxSteps=args.mel, 
+env = er6GymEnv(renders=args.render, maxSteps=args.mel, 
         actionRepeat=args.repeat, task=args.task, randObjPos=args.randObjPos,
         simulatedGripper=args.simgrip, learning_param=args.lp)
 
@@ -54,21 +54,21 @@ args.data_size = obs.shape[0]
 
 def main():
     
-    positions = [[-0.3,0,0,0],[0,0.6,0,0],[0,0,-0.6,0],[0,0,0,0],
-                 [0,0,-0.1,0],[0,-0.1,0,0],[-0.1,0,0,0],[0,0,0,0]]
-    
+    # positions = [[1.0,0.2,0.8,0],[0,0.6,0.8,0],[0,0,-0.6,0],[0,0,0,0],
+    #              [0,0,-0.1,0],[0,-0.1,0,0],[-0.1,0,0,0],[0,0,0,0]]
+    positions = [[0,0,0,0,0,0,0],[0.5,0.5,1,1,1,1,1]]
     state = env.reset()
     ep_reward = 0
 
     for i in range(3):
         for t in range(1, args.mel):
 
-            p = int(t/20)
+            p = int(t/250)
             action = positions[p]
             state, reward, env_done, info = env.step(action)  
         
             print(t, env.target_dist)
-            input()
+            # input()
 
             ep_reward += reward
 

@@ -9,8 +9,9 @@ import gym
 import argparse, random
 from ppo import PPO
 from gym_env import ur5GymEnv
+from er_env import er6GymEnv
 
-title = 'PyBullet UR-5'
+title = 'PyBullet ER-6'
 
 def get_args():
     parser = argparse.ArgumentParser(description=title)
@@ -45,7 +46,7 @@ print(args)
 # create the environment
 print(title)
 args.env_name = title
-env = ur5GymEnv(renders=args.render, maxSteps=args.mel, 
+env = er6GymEnv(renders=args.render, maxSteps=args.mel, 
         actionRepeat=args.repeat, task=args.task, randObjPos=args.randObjPos,
         simulatedGripper=args.simgrip, learning_param=args.lp)
 
